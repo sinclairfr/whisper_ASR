@@ -23,3 +23,4 @@ The script in focus utilizes several Python libraries, including `os`, `pathli
 **Conclusion:**
 
 This innovative script exemplifies the integration of Automatic Speech Recognition technology with web applications, offering a practical solution for transcribing audio files. By combining the capabilities of OpenAI's Whisper and Streamlit, it provides a versatile tool that caters to a wide range of audio formats and user preferences. Whether for academic research, content creation, or accessibility, this application stands as a testament to the boundless possibilities of ASR technology in enhancing digital communication.
+

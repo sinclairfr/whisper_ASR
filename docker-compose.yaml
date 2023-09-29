@@ -1,0 +1,14 @@
+version: "3.3"
+services:
+  whisper_asr:
+    image: whisper_asr:latest
+    container_name: whisper_asr
+    hostname: whisper_asr
+    ports:
+      - "8502:8502"
+    networks:
+      - my-network
+    restart: unless-stopped
+networks:
+  my-network:
+    driver: bridge
