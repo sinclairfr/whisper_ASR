@@ -2,6 +2,8 @@
 
 In the ever-evolving landscape of technology, Automatic Speech Recognition (ASR) stands out as a pivotal advancement, turning spoken language into written text. In this article, we delve into a Python script that seamlessly integrates OpenAI's Whisper ASR with Streamlit, a popular web app framework for Python, to transcribe audio files and present the results in a user-friendly interface.
 
+![scrnli_9_30_2023_4-05-53-PM](https://github.com/sinclairfr/whisper_ASR/assets/118417/c5a1d53d-e366-43a0-8f75-2bf77cbc348f)
+
 **Script Overview:**
 
 The script in focus utilizes several Python libraries, including `os`, `pathlib`, `whisper`, `streamlit`, and `pydub`, to create a web application capable of converting uploaded audio files into text transcripts. The application supports a variety of audio formats such as WAV, MP3, MP4, OGG, WMA, AAC, FLAC, and FLV.
