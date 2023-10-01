@@ -5,10 +5,11 @@ import streamlit as st
 from pydub import AudioSegment
 from audiorecorder import audiorecorder
 import time
-
+import shutil
+    
 # Set Streamlit page configuration
 st.set_page_config(
-    page_title="Automatic Speech Recognition with whisper",
+    page_title="Text-to-speech with whisper",
     page_icon="💬",
     initial_sidebar_state="auto",
 )
@@ -31,7 +32,7 @@ FORMAT_METHOD_MAP = {
 }
 
 # Set the title of the Streamlit app
-st.title("🗣 Automatic Speech Recognition with OpenAI Whisper")
+st.title("🗣 Text-to-Speech with OpenAI Whisper")
 
 
 # Function to convert uploaded/recorded audio to MP3 format
@@ -42,6 +43,7 @@ def convert_to_mp3(input_file):
     # Ensure the directories exist
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    TRANSCRIPT_DIR.mkdir(parents=True, exist_ok=True)
     
     input_path = UPLOAD_DIR / unique_file_name
     output_path = DOWNLOAD_DIR / (unique_file_name.split('.')[0] + '.mp3')
@@ -52,7 +54,9 @@ def convert_to_mp3(input_file):
     
     # Check if the file is already in MP3 format
     if file_extension == 'mp3':
-        os.rename(str(input_path), str(output_path))
+        # If the file is already an MP3, copy it to the output directory and then remove the original
+        shutil.copy(str(input_path), str(output_path))
+        os.remove(str(input_path))
     else:
         try:
             # If the file is not an MP3, convert it
@@ -72,8 +76,15 @@ def convert_to_mp3(input_file):
 
 
 def transcribe_audio(file_path, model_type):
-    model = whisper.load_model(model_type)
-    result = model.transcribe(file_path)
+    if model_type in ["Base","Small"]:
+        model = whisper.load_model(model_type, device="cuda")
+        result = model.transcribe(file_path)
+    else:
+        model = whisper.load_model(model_type, device="cpu")
+        # Transcribe audio with the model without using FP16
+        result = model.transcribe(file_path, fp16=False)
+    
+    st.toast(f'Detected language : {result["language"]}')
     return result["text"]
 
 def write_transcript(transcript, txt_file_path):
@@ -117,7 +128,9 @@ else:
     uploaded_file = st.file_uploader("Upload audio file", type=list(FORMAT_METHOD_MAP.keys()))
 
 # Process the uploaded/recorded audio and generate transcript
-if uploaded_file is not None:
+if uploaded_file is None:
+    st.error('Please upload or record an audio file.')
+else:
     with st.spinner(f"Audio file is being processed."):
         if source == "record":
             output_audio_path = audio_path
@@ -138,7 +151,7 @@ if uploaded_file is not None:
         st.markdown("Play back your file :")
         st.audio(audio_bytes)
     with col2:
-        model_type = st.radio("Please choose your model (Small is the most common)", ('Base', 'Small'),index=1).lower()
+        model_type = st.radio("Please choose your model :", ('Base', 'Small','Medium'),index=1).lower()
 
     if st.button("Generate Transcript"):
         with st.spinner(f"Generating Transcript..."):
@@ -163,5 +176,4 @@ if uploaded_file is not None:
         
         if st.download_button(label="Download the transcript 📝", data=transcript_content, file_name=transcript_file_path.name, mime='text/plain'):
             st.success('✅ Download Successful !!')
-else:
-    st.error('Please upload your audio file.')
+    

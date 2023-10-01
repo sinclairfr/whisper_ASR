@@ -2,6 +2,7 @@
 audios/*
 downloads/*
 transcripts/*
+transcripts_gradio/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
